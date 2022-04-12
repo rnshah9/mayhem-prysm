@@ -791,6 +791,7 @@ func TestService_getFinalizedPayloadHash(t *testing.T) {
 	b := util.NewBeaconBlockBellatrix()
 	b.Block.Body.ExecutionPayload.BlockHash = bytesutil.PadTo([]byte("hi"), 32)
 	blk, err := wrapper.WrappedSignedBeaconBlock(b)
+	require.NoError(t, err)
 	r, err := b.Block.HashTreeRoot()
 	require.NoError(t, err)
 	require.NoError(t, service.cfg.BeaconDB.SaveBlock(ctx, blk))
@@ -802,6 +803,7 @@ func TestService_getFinalizedPayloadHash(t *testing.T) {
 	b = util.NewBeaconBlockBellatrix()
 	b.Block.Body.ExecutionPayload.BlockHash = bytesutil.PadTo([]byte("hello"), 32)
 	blk, err = wrapper.WrappedSignedBeaconBlock(b)
+	require.NoError(t, err)
 	r, err = b.Block.HashTreeRoot()
 	require.NoError(t, err)
 	service.initSyncBlocks[r] = blk
@@ -813,6 +815,7 @@ func TestService_getFinalizedPayloadHash(t *testing.T) {
 	b = util.NewBeaconBlockBellatrix()
 	b.Block.Body.ExecutionPayload.BlockHash = bytesutil.PadTo([]byte("howdy"), 32)
 	blk, err = wrapper.WrappedSignedBeaconBlock(b)
+	require.NoError(t, err)
 	r, err = b.Block.HashTreeRoot()
 	require.NoError(t, err)
 	require.NoError(t, service.cfg.BeaconDB.SaveBlock(ctx, blk))
@@ -823,7 +826,7 @@ func TestService_getFinalizedPayloadHash(t *testing.T) {
 
 	// None of the above should error
 	require.NoError(t, service.cfg.BeaconDB.SaveOriginCheckpointBlockRoot(ctx, [32]byte{'a'}))
-	r, err = service.getFinalizedPayloadHash(ctx, [32]byte{'a'})
+	_, err = service.getFinalizedPayloadHash(ctx, [32]byte{'a'})
 	require.ErrorContains(t, "does not exist in the db or our cache", err)
 }
 
